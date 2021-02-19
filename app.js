@@ -8,10 +8,12 @@ var mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var searchRouter = require('./routes/search');
 
 var Schemas = require('./schemas')
 
 var app = express();
+const port = 3030;
 
 // db connection
 var mongoDB = 'mongodb://localhost:27017/lab3DB';
@@ -32,6 +34,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/search', async function (req, res, next) {
+	//pass allData to search index router
+    await c;
+	req.allData = allData;
+	
+    next();
+}, searchRouter);
 
 let allLinks = []
 let allData = {}
@@ -100,6 +109,7 @@ const c = new Crawler({
                 }           
             })
         }
+		
         done();
     }
 });
@@ -107,7 +117,6 @@ const c = new Crawler({
 let runMongoMigration = async () => {
     for (const page in allData) {
         let pageData = allData[page]
-
         try {
             let p = new Schemas.Page({
                 title: pageData.title,
@@ -117,13 +126,14 @@ let runMongoMigration = async () => {
                 numberOfIncoming: pageData.incomingLinks.length
             })
 
-            await p.save().then(() => console.log('Page added successfully'))
+            await p//.save().then(() => console.log('Page added successfully'))
             
         }
         catch (err) {
             console.log(err)
         }
     }
+	
     console.log('All done.')
 }
 
@@ -155,5 +165,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+app.listen(port, () => {
+  console.log(`REST Server listening at http://localhost:${port}`)
+})
 
 module.exports = app;
