@@ -59,7 +59,7 @@ router.get('/', async (req, res) => {
 			let page = await Schemas.Personal.find({ title: t}).exec();
 			page.forEach((p, index) => {
 				let returnPage = {
-					url: `https://people.scs.carleton.ca/~davidmckenney/fruitgraph/${t}.html`,
+					url: `https://crawler-test.com/${t}`,
 					title: p.title,
 					incomingLinks: p.incomingLinks,
 					outgoingLinks: p.outgoingLinks,
