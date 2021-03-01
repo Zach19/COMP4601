@@ -1,5 +1,6 @@
-var Page = require('./page');
+var Fruits = require('./fruitPage');
+var Personal = require('./personalPage');
 
-const Schemas = { Page }
+const Schemas = { Fruits, Personal }
 
 module.exports = Schemas;

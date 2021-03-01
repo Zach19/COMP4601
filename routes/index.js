@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Schemas = require('../schemas')
+//var Schemas = require('../schemas')
 var express = require('express');
 var router = express.Router();
 
@@ -8,6 +8,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+/*
 router.get('/popular', async (req, res) => {
   let returnPages = []
   let page = await Schemas.Page.find({}).sort({ numberOfIncoming: -1}).limit(10).exec()
@@ -15,7 +16,8 @@ router.get('/popular', async (req, res) => {
      let data = {
        title: p.title,
        numberOfIncoming: p.numberOfIncoming,
-       incomingLinks: p.incomingLinks
+       incomingLinks: p.incomingLinks,
+	   outgoingLinks: p.outgoingLinks
      }
      returnPages.push(data)
    })
@@ -32,5 +34,5 @@ router.get('/search/:id', async (req, res) =>{
     }
     res.send(returnPage);
 })
-
+*/
 module.exports = router;

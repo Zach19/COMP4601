@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const pageSchema = new Schema({
+const fruitSchema = new Schema({
 	title: {
 		type: String
 	},
@@ -16,9 +16,12 @@ const pageSchema = new Schema({
 	},
 	numberOfIncoming: {
 		type: Number
+	},
+	pageRank: {
+		type: mongoose.Types.Decimal128
 	}
 });
 
-const model = mongoose.model('Page', pageSchema);
+const model = mongoose.model('Fruit', fruitSchema);
 
 module.exports = model;
