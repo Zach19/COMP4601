@@ -150,7 +150,7 @@ let pageRankAlgo = () => {
     // populate the matrix with ones by going through each pages outgoing links
     for (let page in allData) {
       for(let j = 0; j < allData[page].outgoingLinks.length; j++) {
-        mat.set(allData[page].title.substring(2), allData[page].outgoingLinks[i].substring(2), 1)
+        mat.set(allData[page].title.substring(2), allData[page].outgoingLinks[j].substring(2), 1)
       }
     }
   

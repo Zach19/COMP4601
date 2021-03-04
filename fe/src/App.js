@@ -58,6 +58,7 @@ function App() {
           })
           .then(result => {
             // Do things with result
+            console.log(result)
             for (let i = 0; i < selectValue; i++) {
               setDisplayData(displayData => [...displayData, result[i]])
             }
@@ -108,7 +109,7 @@ function App() {
         </div>
         <br></br>
       </div>
-      {dataLoaded ? (
+      {displayData[0] ? (
         <div>
           {displayData.map(data => {
            return data ?
@@ -126,7 +127,7 @@ function App() {
             ) :  null;
           })}
         </div>
-      ) : null}
+      ) : <div>No search results found</div>}
     </div>
   );
 }
