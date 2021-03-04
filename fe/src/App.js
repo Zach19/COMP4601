@@ -6,9 +6,26 @@ function App() {
   const [search, setSearch] = useState('');
   const [displayData, setDisplayData] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
-
+  const [fruitSearch, setFruitSearch] = useState(true)
+  const [personalSearch, setPersonalSearch] = useState(false)
+  const [boosted, setBoosted] = useState(false)
+  const [selectValue, setSelectValue] = useState(10)
+  
   const handleSubmit = async () => {
-    fetch(`http://localhost:3000/search?q=${search}`)
+
+    let fetchURL;
+    if (fruitSearch) {
+      fetchURL = `http://localhost:3000/fruits?q=${search}`
+    }
+    else {
+      fetchURL = `http://localhost:3000/personal?q=${search}`
+    }
+    if (boosted) {
+      fetchURL += '&b=true'
+    }
+    fetchURL += `&limit=${selectValue}`
+
+    fetch(fetchURL)
           .then(response => response.body)
           .then(rb => {
             const reader = rb.getReader();
@@ -41,7 +58,7 @@ function App() {
           })
           .then(result => {
             // Do things with result
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < selectValue; i++) {
               setDisplayData(displayData => [...displayData, result[i]])
             }
             setDataLoaded(true)
@@ -61,6 +78,36 @@ function App() {
           handleSubmit()
         }}
       >Search</button>
+      <div>
+        <div>
+          <input type="radio" id="fruits" name="search" value="fruits" checked={fruitSearch}
+                  onClick={() => {
+                    setFruitSearch(!fruitSearch)
+                    setPersonalSearch(!personalSearch)
+                  }} />
+          <label for="fruitSearch">Fruit search</label>
+        </div>
+        <div>
+          <input type="radio" id="personal" name="search" value="personal" checked={personalSearch}
+                  onClick={() => {
+                    setFruitSearch(!fruitSearch)
+                    setPersonalSearch(!personalSearch)
+                  }} />
+          <label for="personalSearch">Personal search</label>
+        </div>
+        <div>
+          <input type="checkbox" checked={boosted} onClick={() => setBoosted(!boosted)} />
+          <label>Boost page rank</label>
+        </div>
+        <div>
+          <select value={selectValue} onChange={e => setSelectValue(e.target.value)}>
+            <option value={1}>1</option>
+            <option value={10}>10</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
+        <br></br>
+      </div>
       {dataLoaded ? (
         <div>
           {displayData.map(data => {
@@ -70,8 +117,10 @@ function App() {
                 <div>
                   URL: https://people.scs.carleton.ca/~davidmckenney/fruitgraph/{data.ref}.html
                 </div>
-                <div>Title: {data.ref}</div>
-                <div>Score: {data.score}</div>
+                <div>Title: {data.title}</div>
+                <div>Page rank: {data.pageRank.$numberDecimal}</div>
+                <div>Incoming Links: {data.incomingLinks}</div>
+                <div>Outgoing Links: {data.outgoingLinks}</div>
                 <br></br>
               </div>
             ) :  null;

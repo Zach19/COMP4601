@@ -12,6 +12,7 @@ const fruitIndex = elasticlunr(function () {
   this.addField('title');
   this.addField('body');
   this.addField('id');
+  this.addField('pageRank');
   this.setRef('title');
 });
 
@@ -22,6 +23,7 @@ function indexResults(doc_data) {
 		var doc = {
 			title: d.title,
 			body: d.paragraph,
+			pageRank: d.pageRank,
 			id: NEXT_ID++
 		}
 		fruitIndex.addDoc(doc);
@@ -37,11 +39,30 @@ router.get('/', async (req, res) => {
 	let boosted = req.query.b;
 	let limit = req.query.limit;
 	let returnPages = [];
+	let limitPages = []
 	
 	//index search result
-	result = fruitIndex.search(query);
+
+	if (boosted) {
+		result = fruitIndex.search(query, { 
+			fields: { 
+				title: {
+					boost: 1
+				},
+				body: {
+					boost: 1
+				},
+				pageRank: {
+					boost: 2
+				}
+			}
+		});
+	}
+	else {
+		result = fruitIndex.search(query);
+	}
 	await result;
-	//console.log(result)
+	// console.log(result)
 	
 	//loop through index results
 	//use the ref key from index search (which is the title) as mongo search parameter
@@ -64,7 +85,7 @@ router.get('/', async (req, res) => {
 					incomingLinks: p.incomingLinks,
 					outgoingLinks: p.outgoingLinks,
 					pageRank: p.pageRank,
-					score: (result[i].score * 1.5 * p.pageRank)
+					score: (result[i].score * 2 * p.pageRank)
 				}
 				returnPages.push(returnPage);
 				
@@ -75,7 +96,7 @@ router.get('/', async (req, res) => {
 	} else {
 		for (var i in result) {
 			t = result[i].ref;
-			
+
 			let page = await Schemas.Fruits.find({ title: t}).exec();;
 			page.forEach((p, index) => {
 				
@@ -94,11 +115,16 @@ router.get('/', async (req, res) => {
 		}
 	}
 	
+	
 	//sort by score, from highest to lowest
 	returnPages.sort((a, b) => (a.score > b.score) ? -1 : 1);
 	
+	for (let i = 0; i < limit; i++) {
+		limitPages.push(returnPages[i])
+	}
+
 	//console.log(returnPages)
-	res.send(returnPages);
+	res.send(limitPages);
 })
 
 module.exports = router;
